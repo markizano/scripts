@@ -14,8 +14,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-	I am not the original author of this script. This was inspired by
-	the man page at getifaddrs(3).
+    I am not the original author of this script. This was inspired by
+    the man page at getifaddrs(3).
 */
 
 #include <arpa/inet.h>
