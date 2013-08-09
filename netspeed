@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+        echo
+        echo usage: $0 network-interface
+        echo
+        echo e.g. $0 eth0
+        echo
+        exit
+fi
+
+IF=$1
+[ -z "$NS_WAIT" ] && NS_WAIT=1s
+
+T_TBPS=0
+T_RBPS=0
+function exit_2 {
+	echo -e "\n\nTotal Traffic( IN=$T_RBPS, OUT=$T_TBPS );";
+	exit 0;
+}
+
+trap exit_2 2;
+
+while true
+do
+        R1=`cat /sys/class/net/$1/statistics/rx_bytes`
+        T1=`cat /sys/class/net/$1/statistics/tx_bytes`
+        sleep $NS_WAIT
+        R2=`cat /sys/class/net/$1/statistics/rx_bytes`
+        T2=`cat /sys/class/net/$1/statistics/tx_bytes`
+        TBPS=`expr $T2 - $T1`
+        RBPS=`expr $R2 - $R1`
+        TKBPS=`expr $TBPS / 1024`
+        RKBPS=`expr $RBPS / 1024`
+        T_TBPS=`expr $T_TBPS + $TKBPS`;
+        T_RBPS=`expr $T_RBPS + $RKBPS`;
+        echo "tx $1: $TKBPS kb/s rx $1: $RKBPS kb/s"
+done
+
